@@ -1,6 +1,12 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router"
+import Markdown from "react-markdown"
+import { useRef, useEffect } from "react"
 
-import { getMessages, sendMessage } from "~/actions/conversation"
+import {
+  getMessages,
+  sendMessage,
+  getAssistantResponse,
+} from "~/actions/conversation"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 
@@ -14,8 +20,6 @@ function RouteComponent() {
   const { conversationId } = Route.useParams()
 
   const messages = Route.useLoaderData()
-
-  console.log(messages)
 
   return (
     <main className="grid h-full min-w-full grid-rows-[1fr_auto_auto] overflow-y-scroll rounded-xl">
@@ -37,8 +41,19 @@ type ChatProps = {
 }
 
 function Chat({ messages }: ChatProps) {
+  const chatRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (chatRef.current) {
+      chatRef.current.scrollTop = chatRef.current.scrollHeight
+    }
+  })
+
   return (
-    <main className="max-h-full overflow-y-scroll p-4">
+    <main
+      ref={chatRef}
+      className="max-h-full overflow-y-scroll scroll-smooth p-4"
+    >
       {messages.map((message) => (
         <div key={message.id} className="mb-2">
           {message.sender === "user" ? (
@@ -59,8 +74,8 @@ type AssistantMessageProps = {
 function AssistantMessage({ message }: AssistantMessageProps) {
   return (
     <div className="flex justify-start">
-      <div className="w-fit rounded-md bg-stone-800 px-3 py-1">
-        <p>{message.text}</p>
+      <div className="prose prose-stone dark:prose-invert w-fit rounded-md bg-stone-800 px-3 py-1">
+        <Markdown>{message.text}</Markdown>
       </div>
     </div>
   )
@@ -85,14 +100,20 @@ function ChatInput() {
 
   return (
     <form
-      onSubmit={(e) => {
+      onSubmit={async (e) => {
         e.preventDefault()
         const formData = new FormData(e.currentTarget)
         const text = formData.get("text") as string
-
-        sendMessage({ data: { text, conversationId } })
-        router.invalidate()
         e.currentTarget.reset()
+
+        const message = await sendMessage({ data: { text, conversationId } })
+        router.invalidate()
+
+        const aiMessage = await getAssistantResponse({
+          data: { conversationId },
+        })
+
+        router.invalidate()
       }}
       className="flex w-full items-center gap-2 p-2"
     >

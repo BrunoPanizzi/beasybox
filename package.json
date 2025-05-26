@@ -22,12 +22,14 @@
     "openai": "^4.103.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-markdown": "^10.1.0",
     "redaxios": "^0.5.1",
     "tailwind-merge": "^2.6.0",
     "vinxi": "0.5.3",
     "zod": "^3.25.28"
   },
   "devDependencies": {
+    "@tailwindcss/typography": "^0.5.16",
     "@types/bun": "^1.2.14",
     "@types/node": "^22.5.4",
     "@types/react": "^19.0.8",

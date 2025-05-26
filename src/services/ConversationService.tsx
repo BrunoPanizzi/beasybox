@@ -1,12 +1,6 @@
 import { db } from "../persistance"
 import { conversations, messages } from "../persistance/schema"
 import { eq } from "drizzle-orm"
-import OpenAI from "openai"
-
-const deepseek = new OpenAI({
-  apiKey: process.env.DEEPSEEK_KEY,
-  baseURL: "https://api.deepseek.com",
-})
 
 export type Conversation = {
   id: string

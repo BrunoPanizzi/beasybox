@@ -4,8 +4,13 @@ import {
   Outlet,
   useRouter,
 } from "@tanstack/react-router"
+import { Trash2 } from "lucide-react"
 
-import { createConversation, getConversations } from "~/actions/conversation"
+import {
+  createConversation,
+  deleteConversation,
+  getConversations,
+} from "~/actions/conversation"
 import { Button } from "~/components/ui/button"
 
 export const Route = createFileRoute("/app")({
@@ -29,32 +34,55 @@ export function SideBar() {
 
   return (
     <aside className="w-64 rounded-xl ">
-      <div className="p-2">
-        <Button
+      <div className="">
+        <button
           type="button"
-          onClick={() => {
-            console.log("create new conversation")
-            createConversation({ data: { title: "New Conversation" } })
+          onClick={async () => {
+            const { id } = await createConversation({
+              data: { title: "New Conversation" },
+            })
+            router.navigate({
+              to: "/app/$conversationId",
+              params: { conversationId: id },
+            })
             router.invalidate()
           }}
-          size="lg"
-          className="w-full"
+          className="w-full bg-stone-700/25 px-6 py-4 font-semibold text-stone-200 transition-colors hover:bg-stone-700/50"
         >
           New chat
-        </Button>
+        </button>
       </div>
 
       <hr className="border-stone-700 border-t-2" />
 
-      <div className="space-y-2 p-2">
+      <div className="pt-4">
         {conversations.map((conv) => (
           <Link
+            key={conv.id}
             params={{ conversationId: conv.id }}
             to="/app/$conversationId"
-            key={conv.id}
-            className="block px-6 py-2 text-stone-200 transition-colors hover:bg-stone-950/75"
+            className="group flex items-stretch justify-between border-transparent border-y-2 text-stone-200 transition-colors hover:bg-stone-700/50"
+            activeProps={{
+              className:
+                "bg-stone-700/25 data-[status=active]:border-stone-700 text-stone-100 font-semibold",
+            }}
           >
-            {conv.title}
+            <span className="p-2 pl-6 ">{conv.title}</span>
+
+            <button
+              type="button"
+              title="Delete conversation"
+              onClick={async (e) => {
+                e.stopPropagation()
+                e.preventDefault()
+                await deleteConversation({ data: { conversationId: conv.id } })
+                router.navigate({ to: "/app" })
+                router.invalidate()
+              }}
+              className="aspect-square p-3 opacity-0 transition-all hover:bg-red-600/50 group-hover:opacity-100"
+            >
+              <Trash2 size={16} className="text-red-400" />
+            </button>
           </Link>
         ))}
       </div>

@@ -1,5 +1,11 @@
 import { createServerFn } from "@tanstack/react-start"
 import { z } from "zod"
+import OpenAI from "openai"
+
+const gemini = new OpenAI({
+  apiKey: process.env.GEMINI_KEY,
+  baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/"
+})
 
 import ConversationService from "~/services/ConversationService"
 
@@ -50,4 +56,57 @@ export const sendMessage = createServerFn({ method: "POST" })
     )
 
     return message
+  })
+
+export const getAssistantResponse = createServerFn({
+  method: "POST",
+})
+  .validator(
+    z.object({
+      conversationId: z.string(),
+    }),
+  )
+  .handler(async ({ data }) => {
+    const { conversationId } = data
+    const messages = await ConversationService.getMessages(conversationId)
+
+    if (messages.length === 0) {
+      throw new Error("No messages found in the conversation")
+    }
+
+    const response = await gemini.chat.completions.create({
+      model: "gemini-2.0-flash",
+      messages: messages.map((msg) => ({
+        role: msg.sender === "user" ? "user" : "assistant",
+        content: msg.text,
+      })),
+    })
+
+    const assistantMessage = response.choices[0].message.content
+
+    if (!assistantMessage) {
+      throw new Error("No response from the assistant")
+    }
+
+    const message = await ConversationService.addMessage(
+      conversationId,
+      assistantMessage,
+      "assistant",
+    )
+
+    return message
+  }
+)
+
+export const deleteConversation = createServerFn({
+  method: "POST",
+})
+  .validator(z.object({ conversationId: z.string() }))
+  .handler(async ({ data }) => {
+    const { conversationId } = data
+    const success = await ConversationService.deleteConversation(conversationId)
+    if (!success) {
+      throw new Error("Failed to delete conversation")
+    }
+    return { success: true }
   })
