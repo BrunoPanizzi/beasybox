@@ -29,7 +29,7 @@ function RouteComponent() {
   return (
     <div className="grid h-screen max-h-screen grid-cols-[auto_auto_1fr] ">
       <SideBar />
-      <div className="h-full w-0 border-stone-700 border-l-2" />
+      <div className="h-full w-0 border-zinc-700 border-l-2" />
       <Outlet />
     </div>
   )
@@ -54,13 +54,13 @@ export function SideBar() {
             })
             router.invalidate()
           }}
-          className="w-full bg-stone-700/25 px-6 py-4 font-semibold text-stone-200 transition-colors hover:bg-stone-700/50"
+          className="w-full bg-emerald-500/25 px-6 py-4 font-semibold text-zinc-200 transition-colors hover:bg-emerald-500/50 hover:text-emerald-100"
         >
           New chat
         </button>
       </div>
 
-      <hr className="border-stone-700 border-t-2" />
+      <hr className="border-zinc-700 border-t-2" />
 
       <div className="pt-4">
         {conversations.map((conv) => (
@@ -68,10 +68,10 @@ export function SideBar() {
             key={conv.id}
             params={{ conversationId: conv.id }}
             to="/app/$conversationId"
-            className="group flex items-center justify-between border-transparent border-y-2 text-sm text-stone-200 transition-colors hover:bg-stone-700/50"
+            className="group flex items-center justify-between border-transparent border-y-2 text-sm text-zinc-200 transition-colors hover:bg-zinc-700/50"
             activeProps={{
               className:
-                "bg-stone-700/25 data-[status=active]:border-stone-700 text-stone-100 font-semibold",
+                "bg-emerald-700/25 data-[status=active]:border-emerald-200/25 data-[status=active]:hover:bg-emerald-700/40 text-zinc-100 font-semibold",
             }}
           >
             <span className="p-2 pl-6 ">{conv.title}</span>
@@ -80,7 +80,7 @@ export function SideBar() {
               <DropdownMenuTrigger asChild>
                 <button
                   type="button"
-                  className="p-3 opacity-0 transition-all hover:bg-stone-700/50 group-hover:opacity-100 data-[state='open']:bg-stone-700/50 data-[state='open']:opacity-100"
+                  className="p-3 opacity-0 transition-all hover:bg-zinc-700/50 group-hover:opacity-100 data-[state='open']:bg-zinc-700/50 data-[state='open']:opacity-100"
                   tabIndex={-1}
                   aria-label="Conversation actions"
                   onClick={(e) => {
@@ -88,7 +88,7 @@ export function SideBar() {
                     e.preventDefault()
                   }}
                 >
-                  <MoreVertical size={18} className="text-stone-400" />
+                  <MoreVertical size={18} className="text-zinc-400" />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" sideOffset={4}>
@@ -102,7 +102,7 @@ export function SideBar() {
                     router.invalidate()
                   }}
                 >
-                  <Edit2Icon size={16} className="text-stone-400" />
+                  <Edit2Icon size={16} className="text-zinc-400" />
                   Rename
                 </DropdownMenuItem>
 

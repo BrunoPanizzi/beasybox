@@ -25,7 +25,7 @@ function RouteComponent() {
   return (
     <main className="grid h-full grid-cols-[auto_52rem_auto] grid-rows-[1fr_auto_auto] gap-x-4 overflow-y-scroll">
       <Chat messages={messages} />
-      <hr className="col-span-full border-stone-700 border-t-2" />
+      <hr className="col-span-full border-zinc-700 border-t-2" />
       <ChatInput />
     </main>
   )
@@ -71,8 +71,8 @@ function ChatMessage({ message }: ChatMessageProps) {
   return (
     <div
       className={cn(
-        "relative col-span-full grid grid-cols-subgrid items-start",
-        isUser ? "bg-stone-900" : "bg-stone-950 py-4",
+        "col-span-full grid grid-cols-subgrid items-start overflow-clip",
+        isUser ? "bg-emerald-500/5" : "bg-zinc-900 py-4",
       )}
     >
       <ChatMeta message={message} isUser={isUser} />
@@ -90,7 +90,7 @@ function ChatMeta({ message, isUser }: ChatMetaProps) {
   return (
     <div
       className={cn(
-        "sticky top-0 row-start-1 row-end-1 flex flex-col justify-center text-stone-500 text-xs",
+        "sticky top-0 row-start-1 row-end-1 flex flex-col justify-center text-xs text-zinc-500",
         isUser
           ? "col-start-3 col-end-4 items-start"
           : "col-start-1 col-end-2 items-end py-1",
@@ -111,8 +111,11 @@ function ChatBubble({ message, isUser }: ChatBubbleProps) {
   return (
     <div
       className={cn(
-        "prose dark:prose-invert prose-stone col-start-2 col-end-3 py-1",
-        { "justify-self-end text-end": isUser },
+        "prose dark:prose-invert prose-zinc col-start-2 col-end-3 py-1",
+        {
+          "justify-self-end border-emerald-700 border-r-4 pr-2 text-end":
+            isUser,
+        },
       )}
     >
       <Markdown>{message.text}</Markdown>
