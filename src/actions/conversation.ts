@@ -110,3 +110,51 @@ export const deleteConversation = createServerFn({
     }
     return { success: true }
   })
+
+export const updateConversationTitle = createServerFn({
+  method: "POST",
+})
+  .validator(
+    z.object({
+      id: z.string(),
+    }),
+  )
+  .handler(async ({ data }) => {
+    const { id } = data
+
+    // generate title with AI
+    const messages = await ConversationService.getMessages(id)
+    if (messages.length === 0) {
+      throw new Error("No messages found in the conversation")
+    }
+
+    const content: string = `Generate a concise short one phrase title for this conversation based on the messages.
+
+    ${JSON.stringify(messages, null, 2)}`
+
+    console.log("Generating title with content:", content)
+
+    const response = await gemini.chat.completions.create({
+      model: "gemini-2.0-flash",
+      messages: [{
+        role: "system",
+        content: content,
+      }, {role: "user", content: "Generate a one phrase title for this conversation"}],
+      max_completion_tokens: 100
+    })
+
+    console.dir(response, { depth: null })
+
+    const title = response.choices[0].message.content
+
+    if (!title) {
+      throw new Error("Failed to generate conversation title")
+    }
+
+
+    const conversation = await ConversationService.updateConversation(id, title)
+    if (!conversation) {
+      throw new Error("Failed to update conversation title")
+    }
+    return conversation
+  })

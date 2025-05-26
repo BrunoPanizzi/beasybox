@@ -4,14 +4,21 @@ import {
   Outlet,
   useRouter,
 } from "@tanstack/react-router"
-import { Trash2 } from "lucide-react"
+import { Edit2Icon, Trash2 } from "lucide-react"
 
 import {
   createConversation,
   deleteConversation,
   getConversations,
+  updateConversationTitle,
 } from "~/actions/conversation"
-import { Button } from "~/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu"
+import { MoreVertical } from "lucide-react"
 
 export const Route = createFileRoute("/app")({
   component: RouteComponent,
@@ -33,7 +40,7 @@ export function SideBar() {
   const conversations = Route.useLoaderData()
 
   return (
-    <aside className="w-64 rounded-xl ">
+    <aside className="w-72 rounded-xl ">
       <div className="">
         <button
           type="button"
@@ -61,7 +68,7 @@ export function SideBar() {
             key={conv.id}
             params={{ conversationId: conv.id }}
             to="/app/$conversationId"
-            className="group flex items-stretch justify-between border-transparent border-y-2 text-stone-200 transition-colors hover:bg-stone-700/50"
+            className="group flex items-center justify-between border-transparent border-y-2 text-sm text-stone-200 transition-colors hover:bg-stone-700/50"
             activeProps={{
               className:
                 "bg-stone-700/25 data-[status=active]:border-stone-700 text-stone-100 font-semibold",
@@ -69,20 +76,53 @@ export function SideBar() {
           >
             <span className="p-2 pl-6 ">{conv.title}</span>
 
-            <button
-              type="button"
-              title="Delete conversation"
-              onClick={async (e) => {
-                e.stopPropagation()
-                e.preventDefault()
-                await deleteConversation({ data: { conversationId: conv.id } })
-                router.navigate({ to: "/app" })
-                router.invalidate()
-              }}
-              className="aspect-square p-3 opacity-0 transition-all hover:bg-red-600/50 group-hover:opacity-100"
-            >
-              <Trash2 size={16} className="text-red-400" />
-            </button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  type="button"
+                  className="p-3 opacity-0 transition-all hover:bg-stone-700/50 group-hover:opacity-100 data-[state='open']:bg-stone-700/50 data-[state='open']:opacity-100"
+                  tabIndex={-1}
+                  aria-label="Conversation actions"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    e.preventDefault()
+                  }}
+                >
+                  <MoreVertical size={18} className="text-stone-400" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" sideOffset={4}>
+                <DropdownMenuItem
+                  onClick={async (e) => {
+                    e.stopPropagation()
+                    e.preventDefault()
+                    await updateConversationTitle({
+                      data: { id: conv.id },
+                    })
+                    router.invalidate()
+                  }}
+                >
+                  <Edit2Icon size={16} className="text-stone-400" />
+                  Rename
+                </DropdownMenuItem>
+
+                <DropdownMenuItem
+                  onClick={async (e) => {
+                    e.stopPropagation()
+                    e.preventDefault()
+                    await deleteConversation({
+                      data: { conversationId: conv.id },
+                    })
+                    router.navigate({ to: "/app" })
+                    router.invalidate()
+                  }}
+                  className="text-red-500 hover:bg-red-700/25"
+                >
+                  <Trash2 size={16} className="text-red-400" />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </Link>
         ))}
       </div>

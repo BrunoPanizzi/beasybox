@@ -1,6 +1,7 @@
+import { desc, eq } from "drizzle-orm"
+
 import { db } from "../persistance"
 import { conversations, messages } from "../persistance/schema"
-import { eq } from "drizzle-orm"
 
 export type Conversation = {
   id: string
@@ -21,7 +22,11 @@ export type Message = {
 
 class ConversationService {
   async listConversations(): Promise<Conversation[]> {
-    const rows = await db.select().from(conversations)
+    const rows = await db
+      .select()
+      .from(conversations)
+      .orderBy(desc(conversations.createdAt))
+
     return rows.map((row) => ({
       id: row.id,
       title: row.title,
