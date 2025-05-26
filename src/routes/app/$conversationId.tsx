@@ -9,6 +9,7 @@ import {
 } from "~/actions/conversation"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
+import { cn } from "~/utils/cn"
 
 export const Route = createFileRoute("/app/$conversationId")({
   component: RouteComponent,
@@ -22,9 +23,9 @@ function RouteComponent() {
   const messages = Route.useLoaderData()
 
   return (
-    <main className="grid h-full min-w-full grid-rows-[1fr_auto_auto] overflow-y-scroll rounded-xl">
+    <main className="grid h-full grid-cols-[auto_52rem_auto] grid-rows-[1fr_auto_auto] gap-x-4 overflow-y-scroll">
       <Chat messages={messages} />
-      <hr className="border-stone-700 border-t-2" />
+      <hr className="col-span-full border-stone-700 border-t-2" />
       <ChatInput />
     </main>
   )
@@ -50,46 +51,71 @@ function Chat({ messages }: ChatProps) {
   })
 
   return (
-    <main
+    <div
       ref={chatRef}
-      className="max-h-full overflow-y-scroll scroll-smooth p-4"
+      className="col-span-full grid h-fit max-h-full grid-cols-subgrid overflow-y-scroll scroll-smooth"
     >
       {messages.map((message) => (
-        <div key={message.id} className="mb-2">
-          {message.sender === "user" ? (
-            <UserMessage message={message} />
-          ) : (
-            <AssistantMessage message={message} />
-          )}
-        </div>
+        <ChatMessage key={message.id} message={message} />
       ))}
-    </main>
-  )
-}
-
-type AssistantMessageProps = {
-  message: Message
-}
-
-function AssistantMessage({ message }: AssistantMessageProps) {
-  return (
-    <div className="flex justify-start">
-      <div className="prose prose-stone dark:prose-invert w-fit rounded-md bg-stone-800 px-3 py-1">
-        <Markdown>{message.text}</Markdown>
-      </div>
     </div>
   )
 }
 
-type UserMessageProps = {
+type ChatMessageProps = {
   message: Message
 }
-function UserMessage({ message }: UserMessageProps) {
+
+function ChatMessage({ message }: ChatMessageProps) {
+  const isUser = message.sender === "user"
   return (
-    <div className="flex justify-end">
-      <div className="w-fit rounded-md bg-blue-900 px-3 py-1">
-        <p>{message.text}</p>
-      </div>
+    <div
+      className={cn(
+        "relative col-span-full grid grid-cols-subgrid items-start",
+        isUser ? "bg-stone-900" : "bg-stone-950 py-4",
+      )}
+    >
+      <ChatMeta message={message} isUser={isUser} />
+      <ChatBubble message={message} isUser={isUser} />
+    </div>
+  )
+}
+
+type ChatMetaProps = {
+  message: Message
+  isUser: boolean
+}
+
+function ChatMeta({ message, isUser }: ChatMetaProps) {
+  return (
+    <div
+      className={cn(
+        "sticky top-0 row-start-1 row-end-1 flex flex-col justify-center text-stone-500 text-xs",
+        isUser
+          ? "col-start-3 col-end-4 items-start"
+          : "col-start-1 col-end-2 items-end py-1",
+      )}
+    >
+      <p>{isUser ? "You" : "Assistant"}</p>
+      <p>{new Date(message.timestamp).toLocaleTimeString()}</p>
+    </div>
+  )
+}
+
+type ChatBubbleProps = {
+  message: Message
+  isUser: boolean
+}
+
+function ChatBubble({ message, isUser }: ChatBubbleProps) {
+  return (
+    <div
+      className={cn(
+        "prose dark:prose-invert prose-stone col-start-2 col-end-3 py-1",
+        { "justify-self-end text-end": isUser },
+      )}
+    >
+      <Markdown>{message.text}</Markdown>
     </div>
   )
 }
@@ -115,7 +141,7 @@ function ChatInput() {
 
         router.invalidate()
       }}
-      className="flex w-full items-center gap-2 p-2"
+      className="col-start-2 col-end-3 flex w-full items-center gap-2 py-2"
     >
       <Input type="text" name="text" placeholder="Type your message..." />
       <Button type="submit">Send</Button>
