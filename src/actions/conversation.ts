@@ -16,6 +16,22 @@ export const getConversations = createServerFn({
   return conversations
 })
 
+export const getConversation = createServerFn({
+  method: "GET",
+})
+  .validator(z.object({ id: z.string() }))
+  .handler(async ({ data }) => {
+    const { id } = data
+    const conversation = await ConversationService.getConversation(id)
+
+    if (!conversation) {
+      throw new Error("Conversation not found")
+    }
+
+    return conversation
+  })
+
+
 const createConversationSchema = z.object({
   title: z.string().min(1, "Title cannot be empty"),
 })

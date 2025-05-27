@@ -49,33 +49,20 @@ function SideBar() {
   const conversations = Route.useLoaderData()
   const { collapsed, setCollapsed } = useSidebar()
 
-  if (collapsed) {
-    return (
-      <div>
-        {/*    <button
-          type="button"
-          onClick={() => setCollapsed(!collapsed)}
-          className="-translate-y-1/2 absolute top-1/2 bg-zinc-800/50 p-3 transition-all hover:bg-emerald-800/50 group-hover:translate-x-0"
-          aria-label="Expand sidebar"
-        >
-          <ChevronRight />
-        </button> */}
-      </div>
-    )
-  }
+  if (collapsed) return <div />
 
   return (
     <aside className="group relative w-72 border-zinc-700 border-r-2">
       <button
         type="button"
         onClick={() => setCollapsed(!collapsed)}
-        className="-translate-x-full -translate-y-1/2 -z-10 absolute top-1/2 left-[calc(100%+2px+4px)] bg-zinc-800/50 p-3 transition-all hover:bg-emerald-800/50 group-hover:z-10 group-hover:translate-x-0"
-        aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+        className="-translate-x-full -translate-y-1/2 -z-10 absolute top-1/2 left-[calc(100%+2px)] bg-zinc-800/50 p-3 transition-all hover:bg-emerald-800/50 group-hover:z-10 group-hover:translate-x-0"
+        aria-label="Collapse sidebar"
       >
         <ChevronLeft />
       </button>
 
-      <div className="">
+      <div className="h-14 border-zinc-700 border-b-2">
         <button
           type="button"
           onClick={async () => {
@@ -88,13 +75,11 @@ function SideBar() {
             })
             router.invalidate()
           }}
-          className="min-w-full bg-emerald-500/15 px-6 py-4 font-semibold text-zinc-200 transition-colors hover:bg-emerald-500/50 hover:text-emerald-100"
+          className="h-full min-w-full bg-zinc-800/50 px-6 py-2 font-semibold text-zinc-200 transition-colors hover:bg-emerald-500/50 hover:text-emerald-100"
         >
           New chat
         </button>
       </div>
-
-      <hr className="border-zinc-700 border-t-2" />
 
       <div className={collapsed ? "flex flex-col items-center pt-4" : "pt-4"}>
         {conversations.map((conv) => (

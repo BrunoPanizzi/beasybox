@@ -6,30 +6,66 @@ import {
   getMessages,
   sendMessage,
   getAssistantResponse,
+  getConversation,
 } from "~/actions/conversation"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { cn } from "~/utils/cn"
+import { useSidebar } from "~/context/sidebarContext"
+import { ArrowRight, ChevronRight } from "lucide-react"
 
 export const Route = createFileRoute("/app/$conversationId")({
   component: RouteComponent,
-  loader: ({ params }) =>
-    getMessages({ data: { conversationId: params.conversationId } }),
+  loader: async ({ params }) => {
+    const { conversationId } = params
+
+    const [conversation, messages] = await Promise.all([
+      getConversation({ data: { id: conversationId } }),
+      getMessages({ data: { conversationId } }),
+    ])
+
+    return { conversation, messages }
+  },
 })
 
 function RouteComponent() {
-  const { conversationId } = Route.useParams()
-
-  const messages = Route.useLoaderData()
+  const { messages } = Route.useLoaderData()
 
   return (
-    <main className="grid h-full grid-cols-[auto_52rem_auto] grid-rows-[1fr_auto_auto] gap-x-4 overflow-y-scroll">
+    <main className="grid h-full grid-cols-[auto_52rem_auto] grid-rows-[auto_1fr_auto_auto] gap-x-4 overflow-y-scroll">
+      <ChatHeader />
       <Chat messages={messages} />
       <hr className="col-span-full border-zinc-700 border-t-2" />
       <ChatInput />
     </main>
   )
 }
+
+function ChatHeader() {
+  const { conversation } = Route.useLoaderData()
+  const { collapsed, setCollapsed } = useSidebar()
+
+  return (
+    <header className="col-span-full grid h-14 grid-cols-subgrid place-items-center border-zinc-700 border-b-2 bg-zinc-800/50">
+      {collapsed && (
+        <button
+          type="button"
+          onClick={() => setCollapsed(!collapsed)}
+          className="flex aspect-square h-full items-center justify-center place-self-start bg-zinc-800 transition-all hover:bg-emerald-800/50"
+          aria-label="Expand sidebar"
+        >
+          <ChevronRight />
+        </button>
+      )}
+      <span className="col-start-2 col-end-2">
+        <h2 className="font-semibold text-lg text-zinc-300">
+          {conversation.title}
+        </h2>
+      </span>
+    </header>
+  )
+}
+
 type Message = {
   id: string
   text: string
@@ -53,7 +89,7 @@ function Chat({ messages }: ChatProps) {
   return (
     <div
       ref={chatRef}
-      className="col-span-full grid h-fit max-h-full grid-cols-subgrid overflow-y-scroll scroll-smooth"
+      className="col-span-full grid h-fit max-h-full grid-cols-subgrid overflow-y-scroll scroll-smooth pb-64"
     >
       {messages.map((message) => (
         <ChatMessage key={message.id} message={message} />
