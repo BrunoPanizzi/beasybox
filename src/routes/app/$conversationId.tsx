@@ -12,7 +12,8 @@ import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { cn } from "~/utils/cn"
 import { useSidebar } from "~/context/sidebarContext"
-import { ArrowRight, ChevronRight } from "lucide-react"
+import { ChevronRight } from "lucide-react"
+import type { Message } from "~/services/ConversationService"
 
 export const Route = createFileRoute("/app/$conversationId")({
   component: RouteComponent,
@@ -32,7 +33,7 @@ function RouteComponent() {
   const { messages } = Route.useLoaderData()
 
   return (
-    <main className="grid h-full grid-cols-[auto_52rem_auto] grid-rows-[auto_1fr_auto_auto] gap-x-4 overflow-y-scroll">
+    <main className="grid h-full min-w-0 max-w-[100vw] grid-cols-[1fr_auto_1fr] grid-rows-[auto_1fr_auto_auto] gap-x-4 overflow-y-scroll">
       <ChatHeader />
       <Chat messages={messages} />
       <hr className="col-span-full border-zinc-700 border-t-2" />
@@ -46,12 +47,12 @@ function ChatHeader() {
   const { collapsed, setCollapsed } = useSidebar()
 
   return (
-    <header className="col-span-full grid h-14 grid-cols-subgrid place-items-center border-zinc-700 border-b-2 bg-zinc-800/50">
+    <header className="relative col-span-full grid h-14 grid-cols-subgrid place-items-center border-zinc-700 border-b-2 bg-zinc-800/50">
       {collapsed && (
         <button
           type="button"
           onClick={() => setCollapsed(!collapsed)}
-          className="flex aspect-square h-full items-center justify-center place-self-start bg-zinc-800 transition-all hover:bg-emerald-800/50"
+          className="absolute flex aspect-square h-full items-center justify-center place-self-start bg-zinc-800 transition-all hover:bg-emerald-800/50"
           aria-label="Expand sidebar"
         >
           <ChevronRight />
@@ -64,13 +65,6 @@ function ChatHeader() {
       </span>
     </header>
   )
-}
-
-type Message = {
-  id: string
-  text: string
-  sender: "user" | "assistant"
-  timestamp: string
 }
 
 type ChatProps = {
@@ -126,7 +120,7 @@ function ChatMeta({ message, isUser }: ChatMetaProps) {
   return (
     <div
       className={cn(
-        "sticky top-0 row-start-1 row-end-1 flex flex-col justify-center text-xs text-zinc-500",
+        "sticky top-0 row-start-1 row-end-1 hidden flex-col justify-center whitespace-nowrap text-xs text-zinc-500 md:flex",
         isUser
           ? "col-start-3 col-end-4 items-start"
           : "col-start-1 col-end-2 items-end py-1",

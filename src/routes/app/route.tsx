@@ -36,7 +36,9 @@ function RouteComponent() {
   return (
     <SidebarProvider>
       <div className="grid h-screen max-h-screen grid-cols-[auto_auto_1fr] ">
-        <SideBar />
+        <div className="relative min-h-full">
+          <SideBar />
+        </div>
         <div className="h-full w-0 " />
         <Outlet />
       </div>
@@ -49,14 +51,14 @@ function SideBar() {
   const conversations = Route.useLoaderData()
   const { collapsed, setCollapsed } = useSidebar()
 
-  if (collapsed) return <div />
+  if (collapsed) return
 
   return (
-    <aside className="group relative w-72 border-zinc-700 border-r-2">
+    <aside className="group absolute top-0 bottom-0 left-0 z-10 h-full w-72 border-zinc-700 border-r-2 bg-zinc-900 shadow-[0_0_0_100vw_rgba(0,0,0,0.5)] md:relative md:shadow-none">
       <button
         type="button"
         onClick={() => setCollapsed(!collapsed)}
-        className="-translate-x-full -translate-y-1/2 -z-10 absolute top-1/2 left-[calc(100%+2px)] bg-zinc-800/50 p-3 transition-all hover:bg-emerald-800/50 group-hover:z-10 group-hover:translate-x-0"
+        className="-translate-x-full -translate-y-1/2 -z-30 absolute top-1/2 left-[calc(100%+2px)] bg-zinc-800/50 p-3 transition-all hover:bg-emerald-800/50 group-hover:z-10 group-hover:translate-x-0"
         aria-label="Collapse sidebar"
       >
         <ChevronLeft />
