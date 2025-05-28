@@ -1,19 +1,19 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router"
+import { ChevronRight } from "lucide-react"
 import Markdown from "react-markdown"
 import { useRef, useEffect } from "react"
 
+import { cn } from "~/utils/cn"
+
+import type { Message } from "~/services/ConversationService"
 import {
   getMessages,
   sendMessage,
   getAssistantResponse,
   getConversation,
 } from "~/actions/conversation"
-import { Button } from "~/components/ui/button"
-import { Input } from "~/components/ui/input"
-import { cn } from "~/utils/cn"
+
 import { useSidebar } from "~/context/sidebarContext"
-import { ChevronRight } from "lucide-react"
-import type { Message } from "~/services/ConversationService"
 
 export const Route = createFileRoute("/app/$conversationId")({
   component: RouteComponent,
@@ -36,8 +36,20 @@ function RouteComponent() {
     <main className="grid h-full min-w-0 max-w-[100vw] grid-cols-[1fr_auto_1fr] grid-rows-[auto_1fr_auto_auto] gap-x-4 overflow-y-scroll">
       <ChatHeader />
       <Chat messages={messages} />
-      <hr className="col-span-full border-zinc-700 border-t-2" />
       <ChatInput />
+      <span className="col-span-full py-1 text-center text-xs">
+        Made with ❤️ by{" "}
+        <a
+          className="text-emerald-300 hover:underline"
+          href="https://brunopanizzi.dev.br"
+          target="_blank"
+          rel="noopener noreferrer"
+          title="Bruno Panizzi"
+          aria-label="Bruno Panizzi"
+        >
+          Bruno Panizzi
+        </a>
+      </span>
     </main>
   )
 }
@@ -47,7 +59,7 @@ function ChatHeader() {
   const { collapsed, setCollapsed } = useSidebar()
 
   return (
-    <header className="relative col-span-full grid h-14 grid-cols-subgrid place-items-center border-zinc-700 border-b-2 bg-zinc-800/50">
+    <header className="relative col-span-full grid h-12 grid-cols-subgrid place-items-center border-zinc-700 border-b-2 bg-zinc-800/50 md:h-14">
       {collapsed && (
         <button
           type="button"
@@ -141,7 +153,7 @@ function ChatBubble({ message, isUser }: ChatBubbleProps) {
   return (
     <div
       className={cn(
-        "prose dark:prose-invert prose-zinc col-start-2 col-end-3 py-1",
+        "prose dark:prose-invert prose-zinc col-start-2 col-end-3 break-words py-1",
         {
           "justify-self-end border-emerald-700 border-r-4 pr-2 text-end":
             isUser,
@@ -158,26 +170,38 @@ function ChatInput() {
   const { conversationId } = Route.useParams()
 
   return (
-    <form
-      onSubmit={async (e) => {
-        e.preventDefault()
-        const formData = new FormData(e.currentTarget)
-        const text = formData.get("text") as string
-        e.currentTarget.reset()
+    <div className="col-span-full grid grid-cols-subgrid border-zinc-700 border-y-2 ">
+      <form
+        onSubmit={async (e) => {
+          e.preventDefault()
+          const formData = new FormData(e.currentTarget)
+          const text = formData.get("text") as string
+          e.currentTarget.reset()
 
-        const message = await sendMessage({ data: { text, conversationId } })
-        router.invalidate()
+          const message = await sendMessage({ data: { text, conversationId } })
+          router.invalidate()
 
-        const aiMessage = await getAssistantResponse({
-          data: { conversationId },
-        })
+          const aiMessage = await getAssistantResponse({
+            data: { conversationId },
+          })
 
-        router.invalidate()
-      }}
-      className="col-start-2 col-end-3 flex w-full items-center gap-2 py-2"
-    >
-      <Input type="text" name="text" placeholder="Type your message..." />
-      <Button type="submit">Send</Button>
-    </form>
+          router.invalidate()
+        }}
+        className="col-start-2 col-end-3 flex w-full items-center gap-4"
+      >
+        <input
+          className="w-full border-transparent border-x-2 bg-zinc-800 px-3 py-2 ring-2 ring-zinc-700 transition-all hover:ring-emerald-500/50 focus-visible:outline-none focus-visible:ring-emerald-500"
+          type="text"
+          name="text"
+          placeholder="Type your message..."
+        />
+        <button
+          className="border-transparent border-x-2 bg-zinc-800 px-4 py-2 ring-2 ring-zinc-700 transition-all hover:bg-emerald-700/25 hover:ring-emerald-500/50 focus-visible:outline-none focus-visible:ring-emerald-500 "
+          type="submit"
+        >
+          Send
+        </button>
+      </form>
+    </div>
   )
 }

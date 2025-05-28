@@ -36,7 +36,7 @@ function RouteComponent() {
   return (
     <SidebarProvider>
       <div className="grid h-screen max-h-screen grid-cols-[auto_auto_1fr] ">
-        <div className="relative min-h-full">
+        <div className="min-h-full">
           <SideBar />
         </div>
         <div className="h-full w-0 " />
@@ -54,17 +54,17 @@ function SideBar() {
   if (collapsed) return
 
   return (
-    <aside className="group absolute top-0 bottom-0 left-0 z-10 h-full w-72 border-zinc-700 border-r-2 bg-zinc-900 shadow-[0_0_0_100vw_rgba(0,0,0,0.5)] md:relative md:shadow-none">
+    <aside className="absolute top-0 bottom-0 left-0 z-10 h-full w-72 border-zinc-700 border-r-2 bg-zinc-900 shadow-[0_0_0_100vw_rgba(0,0,0,0.5)] md:relative md:shadow-none">
       <button
         type="button"
         onClick={() => setCollapsed(!collapsed)}
-        className="-translate-x-full -translate-y-1/2 -z-30 absolute top-1/2 left-[calc(100%+2px)] bg-zinc-800/50 p-3 transition-all hover:bg-emerald-800/50 group-hover:z-10 group-hover:translate-x-0"
+        className="-translate-y-1/2 absolute top-1/2 left-[calc(100%+2px)] bg-zinc-800 p-3 backdrop-blur-md transition-all hover:bg-emerald-800/50"
         aria-label="Collapse sidebar"
       >
         <ChevronLeft />
       </button>
 
-      <div className="h-14 border-zinc-700 border-b-2">
+      <div className="h-12 border-zinc-700 border-b-2 md:h-14">
         <button
           type="button"
           onClick={async () => {
