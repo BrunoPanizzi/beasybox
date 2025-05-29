@@ -91,8 +91,8 @@ class ConversationService {
       id: row.id,
       conversationId: row.conversationId,
       text: row.text,
-      sender: row.sender as SenderType,
       timestamp: row.timestamp.toISOString(),
+      sender: row.sender,
     }))
   }
 
@@ -114,8 +114,8 @@ class ConversationService {
       id: row.id,
       conversationId: row.conversationId,
       text: row.text,
-      sender: row.sender as SenderType,
       timestamp: row.timestamp.toISOString(),
+      sender: row.sender,
     }
   }
 }
