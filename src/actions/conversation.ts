@@ -4,7 +4,7 @@ import OpenAI from "openai"
 
 const gemini = new OpenAI({
   apiKey: process.env.GEMINI_KEY,
-  baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/"
+  baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
 })
 
 import ConversationService from "~/services/ConversationService"
@@ -30,7 +30,6 @@ export const getConversation = createServerFn({
 
     return conversation
   })
-
 
 const createConversationSchema = z.object({
   title: z.string().min(1, "Title cannot be empty"),
@@ -111,8 +110,7 @@ export const getAssistantResponse = createServerFn({
     )
 
     return message
-  }
-)
+  })
 
 export const deleteConversation = createServerFn({
   method: "POST",
@@ -144,19 +142,20 @@ export const updateConversationTitle = createServerFn({
       throw new Error("No messages found in the conversation")
     }
 
-    const content: string = `Generate a concise short one phrase title for this conversation based on the messages.
+    const content: string = `Gere um título curto de poucas palavras, para a seguinte conversa
 
     ${JSON.stringify(messages, null, 2)}`
 
-    console.log("Generating title with content:", content)
-
     const response = await gemini.chat.completions.create({
       model: "gemini-2.0-flash",
-      messages: [{
-        role: "system",
-        content: content,
-      }, {role: "user", content: "Generate a one phrase title for this conversation"}],
-      max_completion_tokens: 100
+      messages: [
+        {
+          role: "system",
+          content: content,
+        },
+        { role: "user", content: "Diga apenas o título" },
+      ],
+      max_completion_tokens: 100,
     })
 
     console.dir(response, { depth: null })
@@ -166,7 +165,6 @@ export const updateConversationTitle = createServerFn({
     if (!title) {
       throw new Error("Failed to generate conversation title")
     }
-
 
     const conversation = await ConversationService.updateConversation(id, title)
     if (!conversation) {

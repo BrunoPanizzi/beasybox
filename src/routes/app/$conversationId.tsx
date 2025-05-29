@@ -2,6 +2,7 @@ import { createFileRoute, useRouter } from "@tanstack/react-router"
 import { ChevronRight } from "lucide-react"
 import Markdown from "react-markdown"
 import { useRef, useEffect } from "react"
+import { format } from "date-fns"
 
 import { cn } from "~/utils/cn"
 
@@ -38,7 +39,7 @@ function RouteComponent() {
       <Chat messages={messages} />
       <ChatInput />
       <span className="col-span-full py-1 text-center text-xs">
-        Made with ❤️ by{" "}
+        Feito com ❤️ por{" "}
         <a
           className="text-emerald-300 hover:underline"
           href="https://brunopanizzi.dev.br"
@@ -65,7 +66,7 @@ function ChatHeader() {
           type="button"
           onClick={() => setCollapsed(!collapsed)}
           className="absolute flex aspect-square h-full items-center justify-center place-self-start bg-zinc-800 transition-all hover:bg-emerald-800/50"
-          aria-label="Expand sidebar"
+          aria-label="Expandir barra lateral"
         >
           <ChevronRight />
         </button>
@@ -138,8 +139,8 @@ function ChatMeta({ message, isUser }: ChatMetaProps) {
           : "col-start-1 col-end-2 items-end py-1",
       )}
     >
-      <p>{isUser ? "You" : "Assistant"}</p>
-      <p>{new Date(message.timestamp).toLocaleTimeString()}</p>
+      <p>{isUser ? "Você" : "Assistente"}</p>
+      <p>{format(message.timestamp, "HH:mm")}</p>
     </div>
   )
 }
@@ -193,13 +194,13 @@ function ChatInput() {
           className="w-full border-transparent border-x-2 bg-zinc-800 px-3 py-2 ring-2 ring-zinc-700 transition-all hover:ring-emerald-500/50 focus-visible:outline-none focus-visible:ring-emerald-500"
           type="text"
           name="text"
-          placeholder="Type your message..."
+          placeholder="Digite sua mensagem..."
         />
         <button
           className="border-transparent border-x-2 bg-zinc-800 px-4 py-2 ring-2 ring-zinc-700 transition-all hover:bg-emerald-700/25 hover:ring-emerald-500/50 focus-visible:outline-none focus-visible:ring-emerald-500 "
           type="submit"
         >
-          Send
+          Enviar
         </button>
       </form>
     </div>
