@@ -2,12 +2,14 @@ import { createServerFn } from "@tanstack/react-start"
 import { z } from "zod"
 import OpenAI from "openai"
 
-const gemini = new OpenAI({
-  apiKey: process.env.GEMINI_KEY,
-  baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
-})
+import { env } from "~/utils/env"
 
 import ConversationService from "~/services/ConversationService"
+
+const gemini = new OpenAI({
+  apiKey: env.GEMINI_API_KEY,
+  baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
+})
 
 export const getConversations = createServerFn({
   method: "GET",
